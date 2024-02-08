@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "@/convex/_generated/api";
-import { useApiMutations } from "@/hooks/use-api-mutations";
+import { useApiMutation } from "@/hooks/use-api-mutation";
 import { cn } from "@/lib/utils";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -12,7 +12,7 @@ interface NewBoardButtonProps {
 }
 
 export const NewBoardButton = ({ orgId, disabled }: NewBoardButtonProps) => {
-  const { mutate, pending } = useApiMutations(api.board.create);
+  const { mutate, pending } = useApiMutation(api.board.create);
 
   const onClick = () => {
     mutate({ orgId, title: "Untitled" })

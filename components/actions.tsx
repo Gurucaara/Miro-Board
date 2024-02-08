@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Link2, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { useApiMutations } from "@/hooks/use-api-mutations";
+import { useApiMutation } from "@/hooks/use-api-mutation";
 import { api } from "@/convex/_generated/api";
 import { ConfirmModal } from "@/components/confirm-modal";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,7 @@ export const Actions = ({
   title,
 }: ActionsProps) => {
   const { onOpen } = useRenameModal();
-  const { mutate, pending } = useApiMutations(api.board.remove);
+  const { mutate, pending } = useApiMutation(api.board.remove);
 
   const onCopyLink = () => {
     navigator.clipboard

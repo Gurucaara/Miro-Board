@@ -13,12 +13,12 @@ import { useRenameModal } from "@/store/use-rename-modal";
 import { FormEventHandler, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useApiMutations } from "@/hooks/use-api-mutations";
+import { useApiMutation } from "@/hooks/use-api-mutation";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 
 export const RenameModal = () => {
-  const { mutate, pending } = useApiMutations(api.board.update);
+  const { mutate, pending } = useApiMutation(api.board.update);
 
   const { isOpen, onClose, initialValues } = useRenameModal();
 
