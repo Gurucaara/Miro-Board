@@ -1,49 +1,35 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-import { 
-  Camera, 
-  Color, 
-  Point, 
-  Side, 
-  XYWH
-} from "@/types/canvas";
+import { Camera, Color, Layer, Point, Side, XYWH } from "@/types/canvas";
 
-const COLORS = [
-  "#DC2626", 
-  "#D97706", 
-  "#059669", 
-  "#7C3AED", 
-  "#DB2777"
-];
+const COLORS = ["#DC2626", "#D97706", "#059669", "#7C3AED", "#DB2777"];
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function connectionIdToColor(connectionId: number): string {
   return COLORS[connectionId % COLORS.length];
-};
+}
 
 export function pointerEventToCanvasPoint(
   e: React.PointerEvent,
-  camera: Camera,
+  camera: Camera
 ) {
   return {
     x: Math.round(e.clientX) - camera.x,
     y: Math.round(e.clientY) - camera.y,
   };
-};
-
-export function colorToCss(color: Color) {
-  return `#${color.r.toString(16).padStart(2, "0")}${color.g.toString(16).padStart(2, "0")}${color.b.toString(16).padStart(2, "0")}`;
 }
 
-export function resizeBounds(
-  bounds: XYWH, 
-  corner: Side, 
-  point: Point
-): XYWH {
+export function colorToCss(color: Color) {
+  return `#${color.r.toString(16).padStart(2, "0")}${color.g
+    .toString(16)
+    .padStart(2, "0")}${color.b.toString(16).padStart(2, "0")}`;
+}
+
+export function resizeBounds(bounds: XYWH, corner: Side, point: Point): XYWH {
   const result = {
     x: bounds.x,
     y: bounds.y,
@@ -72,4 +58,40 @@ export function resizeBounds(
   }
 
   return result;
-};
+}
+
+export function findIntersectingLayersWithRectangle(
+  layerIds: readonly string[],
+  layers: ReadonlyMap<string, Layer>,
+  a: Point,
+  b: Point
+) {
+  const rect = {
+    x: Math.min(a.x, b.x),
+    y: Math.min(a.y, b.y),
+    width: Math.abs(a.x - b.x),
+    height: Math.abs(a.y - b.y),
+  };
+
+  const ids = [];
+
+  for (const layerId of layerIds) {
+    const layer = layers.get(layerId);
+
+    if (layer == null) {
+      continue;
+    }
+
+    const { x, y, height, width } = layer;
+
+    if (
+      rect.x + rect.width > x &&
+      rect.x < x + width &&
+      rect.y + rect.height > y &&
+      rect.y < y + height
+    ) {
+      ids.push(layerId);
+    }
+  }
+  return ids;
+}
