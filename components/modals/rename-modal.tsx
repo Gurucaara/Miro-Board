@@ -58,17 +58,17 @@ export const RenameModal = () => {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Board Title"
           />
-        </form>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button type="button" variant="outline">
-              Cancel
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button disabled={pending} type="submit">
+              Save
             </Button>
-          </DialogClose>
-          <Button disabled={pending} type="submit">
-            Save
-          </Button>
-        </DialogFooter>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
