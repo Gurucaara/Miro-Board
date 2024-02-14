@@ -2,13 +2,18 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
+import { useAction, useQuery } from "convex/react";
 import { Poppins } from "next/font/google";
-import { LayoutDashboard, Star } from "lucide-react";
-import { OrganizationSwitcher } from "@clerk/nextjs";
 import { useSearchParams } from "next/navigation";
+import { Banknote, LayoutDashboard, Star } from "lucide-react";
+import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs";
+import { api } from "@/convex/_generated/api";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -19,6 +24,33 @@ export const OrgSidebar = () => {
   const searchParams = useSearchParams();
   const favorites = searchParams.get("favorites");
 
+  const { organization } = useOrganization();
+  const isSubscribed = useQuery(api.subscription.getIsSubscribed, {
+    orgId: organization?.id,
+  });
+
+  const [pending, setPending] = useState(false);
+
+  const portal = useAction(api.stripe.portal);
+  const pay = useAction(api.stripe.pay);
+
+  const onClick = async () => {
+    if (!organization?.id) return;
+    setPending(true);
+    try {
+      const action = isSubscribed ? portal : pay;
+      const redirectedUrl = await action({
+        orgId: organization.id,
+      });
+
+      window.location.href = redirectedUrl;
+    } catch {
+      toast.error("Something went wrong");
+    } finally {
+      setPending(false);
+    }
+  };
+
   return (
     <div className="hidden lg:flex flex-col space-y-6 w-[206px] pl-5 pt-5">
       <Link href="/">
@@ -27,6 +59,7 @@ export const OrgSidebar = () => {
           <span className={cn("font-semibold text-2xl", font.className)}>
             Board
           </span>
+          {isSubscribed && <Badge variant="secondary">PRO</Badge>}
         </div>
       </Link>
       <OrganizationSwitcher
@@ -77,6 +110,16 @@ export const OrgSidebar = () => {
             <Star className="h-4 w-4 mr-2" />
             Favorite boards
           </Link>
+        </Button>
+        <Button
+          onClick={onClick}
+          disabled={pending}
+          variant="ghost"
+          size="lg"
+          className="font-normal justify-start px-2 w-full"
+        >
+          <Banknote className="h-4 w-4 mr-2" />
+          {isSubscribed ? "Payment Settings" : "Updgrade"}
         </Button>
       </div>
     </div>
