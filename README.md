@@ -1,5 +1,7 @@
 # Miro Board
 
+![Miro Board](/assets/board.png)
+
 ## Features
 
 - **🛠️ Whiteboard from Scratch**
